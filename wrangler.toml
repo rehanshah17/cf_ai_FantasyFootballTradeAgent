@@ -1,0 +1,30 @@
+name = "cf-fantasy-trade-gm-agent"
+main = "worker/src/index.ts"
+compatibility_date = "2024-11-20"
+
+
+[observability]
+enabled = true
+
+
+# Workers AI binding
+[ai]
+binding = "AI"
+remote = true
+
+
+# Vectorize index binding
+[[vectorize]]
+binding = "VECTORIZE"
+index_name = "trades-index"
+remote = true
+
+
+# Durable Object for per-league state
+[[durable_objects.bindings]]
+name = "LEAGUE_STATE"
+class_name = "LeagueState"
+
+[[migrations]]
+tag = "v1"
+new_classes = ["LeagueState"]

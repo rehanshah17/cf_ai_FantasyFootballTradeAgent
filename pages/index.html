@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Fantasy Trade GM Agent</title>
+</head>
+<body>
+<h1>Fantasy Trade GM Agent</h1>
+<section>
+<h3>Initialize league</h3>
+<textarea id="league" rows="8" cols="80" placeholder='{"leagueId":"demo","teams":[],"players":[],"rules":{},"history":[]}'></textarea>
+<button id="init">Init</button>
+</section>
+
+
+<section>
+<h3>Evaluate trade</h3>
+<textarea id="trade" rows="6" cols="80" placeholder='{"leagueId":"demo","fromTeamId":"A","toTeamId":"B","give":["p1"],"get":["p2"]}'></textarea>
+<select id="persona">
+<option>Default</option>
+<option>Morey</option>
+<option>Ujiri</option>
+<option>Presti</option>
+</select>
+<button id="eval">Evaluate</button>
+<pre id="out"></pre>
+</section>
+
+
+<script src="./app.js"></script>
+</body>
+</html>
