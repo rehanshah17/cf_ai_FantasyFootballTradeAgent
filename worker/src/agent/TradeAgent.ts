@@ -2,7 +2,7 @@ import { computeTeamValueDelta } from "../services/value";
 import { riskFlags } from "../services/risk";
 import { similarTrades } from "../services/comps";
 import { personaWriteup } from "../llm/writeup";
-import { League, TradeEvaluation, TradeProposal } from "../types";
+import { League, TradeEvaluation, TradeProposal,Env } from "../types";
 
 
 export async function evaluateTrade(env: Env, league: League, proposal: TradeProposal, persona = "Default"): Promise<TradeEvaluation> {
