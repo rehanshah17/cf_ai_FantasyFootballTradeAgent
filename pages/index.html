@@ -297,6 +297,16 @@
   <div class="container">
     <h1>Fantasy Trade GM Agent</h1>
 
+
+    <section>
+      <h3>GM Memory Summary</h3>
+      <pre
+        id="memory"
+        style="background:#222; color:#0f0; padding:1em; border-radius:10px; white-space:pre-wrap;"
+      >Loading...</pre>
+      <button id="refreshMemory">Refresh Memory</button>
+    </section>
+    
     <section>
       <h3>Initialize League</h3>
       <label class="label" for="league">League Configuration (JSON):</label>
@@ -308,15 +318,6 @@
       <div class="controls">
         <button id="init">Initialize League</button>
       </div>
-    </section>
-
-    <section>
-      <h3>GM Memory Summary</h3>
-      <pre
-        id="memory"
-        style="background:#222; color:#0f0; padding:1em; border-radius:10px; white-space:pre-wrap;"
-      >Loading...</pre>
-      <button id="refreshMemory">Refresh Memory</button>
     </section>
 
     <section>

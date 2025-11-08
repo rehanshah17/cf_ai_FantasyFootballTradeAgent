@@ -186,13 +186,6 @@ async function updateMemoryDisplay(leagueId = "demo-nfl") {
   }
 }
 
-// Hook up Refresh button
-document.getElementById("refreshMemory").onclick = () => updateMemoryDisplay();
-
-// Call it once on page load
-updateMemoryDisplay();
-
-
 window.addEventListener("DOMContentLoaded", () => {
   try {
     const initButton = getRequiredElement("init");
@@ -201,12 +194,19 @@ window.addEventListener("DOMContentLoaded", () => {
     const tradeInput = getRequiredElement("trade");
     const personaSelect = getRequiredElement("persona");
     const output = getRequiredElement("out");
+    const refreshButton = getRequiredElement("refreshMemory");
 
+    // Hook up league + trade handlers
     initButton.addEventListener("click", () => handleLeagueInit(initButton, leagueInput));
     evalButton.addEventListener("click", () =>
       handleTradeEvaluation(evalButton, tradeInput, personaSelect, output)
     );
+
+    // ✅ Hook up refresh + load memory AFTER DOM exists
+    refreshButton.addEventListener("click", () => updateMemoryDisplay());
+    updateMemoryDisplay();
+
   } catch (error) {
-    console.error(error);
+    console.error("Error wiring up event listeners:", error);
   }
 });
