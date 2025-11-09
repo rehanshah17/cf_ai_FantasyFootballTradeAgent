@@ -159,13 +159,17 @@ router.post("/api/trade/evaluate", async (request, env: Env) => {
       console.warn("[API] Failed to log request summary", e);
     }
 
-    const wfPayload = { leagueId: proposal.leagueId, proposal, persona };
+    const workflowId =
+      typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : `wf-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    const wfPayload = { workflowId, leagueId: proposal.leagueId, proposal, persona };
     console.log("[API] Starting workflow with payload:", JSON.stringify(wfPayload));
 
     try {
-      const instance = await env.EVALUATE_TRADE.create({ params: wfPayload });
-      console.log("[API] Workflow created", { id: instance.id });
-      return jsonResponse({ id: instance.id, status: "queued" }, { status: 202 });
+      await env.EVALUATE_TRADE.create({ id: workflowId, params: wfPayload });
+      console.log("[API] Workflow created", { id: workflowId });
+      return jsonResponse({ id: workflowId, status: "queued" }, { status: 202 });
     } catch (err) {
       console.error("[API] Workflow execution failed", err);
       throw err;
@@ -240,6 +244,39 @@ router.get("/api/trade/status", async (request, env: Env) => {
   }
 });
 
+async function streamResponseWithCors(response: Response): Promise<Response> {
+  const headers = new Headers(response.headers);
+  Object.entries(CORS_HEADERS).forEach(([key, value]) => headers.set(key, value));
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
+router.get("/api/stream", async (request, env: Env) => {
+  try {
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id")?.trim();
+    if (!id) {
+      return jsonResponse({ error: "Missing id" }, { status: 400 });
+    }
+
+    if (!env.STREAM_HUB) {
+      return jsonResponse({ error: "STREAM_HUB binding not configured" }, { status: 500 });
+    }
+
+    const stub = env.STREAM_HUB.get(env.STREAM_HUB.idFromName(id));
+    const response = await stub.fetch("https://hub/connect", {
+      headers: { Accept: "text/event-stream" },
+    });
+    return streamResponseWithCors(response);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to open stream";
+    return jsonResponse({ error: message }, { status: 500 });
+  }
+});
+
 router.all("*", () => jsonResponse({ error: "Not Found" }, { status: 404 }));
 
 export default {
@@ -260,3 +297,4 @@ export default {
 
 export { LeagueState };
 export { EvaluateTradeWorkflow } from "./workflows/EvaluateTradeWorkflow";
+export { StreamHub } from "./durable/StreamHub";

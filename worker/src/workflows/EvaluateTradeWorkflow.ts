@@ -3,6 +3,7 @@ import { evaluateTrade } from "../agent/TradeAgent";
 import type { Env, League, TradeEvaluation, TradeProposal } from "../types";
 
 type Input = {
+  workflowId: string;
   leagueId: string;
   proposal: TradeProposal;
   persona?: string;
@@ -37,8 +38,8 @@ export class EvaluateTradeWorkflow extends WorkflowEntrypoint<Input, Output> {
       throw new Error("Workflow input missing leagueId/proposal. Check env.EVALUATE_TRADE.create payload.");
     }
 
-    const { leagueId, proposal, persona = "Default" } = payload;
-    console.log("[WF] Resolved input:", { leagueId, hasProposal: !!proposal, persona });
+    const { workflowId, leagueId, proposal, persona = "Default" } = payload;
+    console.log("[WF] Resolved input:", { workflowId, leagueId, hasProposal: !!proposal, persona });
     const env = (this as unknown as { env: Env }).env;
 
     console.log("[WF] Fetching league...", { leagueId });
@@ -105,6 +106,28 @@ export class EvaluateTradeWorkflow extends WorkflowEntrypoint<Input, Output> {
       });
     } catch (err) {
       console.warn("[WF] Unable to fetch memory after append (non-fatal)", err);
+    }
+
+    try {
+      await step.do("notify-stream", async () => {
+        try {
+          if (!env.STREAM_HUB) return;
+          const stub = env.STREAM_HUB.get(env.STREAM_HUB.idFromName(workflowId));
+          await stub.fetch("https://hub/emit", {
+            method: "POST",
+            body: JSON.stringify({
+              id: workflowId,
+              status: "complete",
+              output: { ok: true, evaluation },
+            }),
+          });
+          console.log("[WF] Stream notification emitted", workflowId);
+        } catch (err) {
+          console.warn("[WF] Failed to emit stream update", err);
+        }
+      });
+    } catch (err) {
+      console.warn("[WF] notify-stream step failed", err);
     }
 
     console.log("[WF] Completed evaluation");

@@ -23,9 +23,17 @@ remote = true
 name = "LEAGUE_STATE"
 class_name = "LeagueState"
 
+[[durable_objects.bindings]]
+name = "STREAM_HUB"
+class_name = "StreamHub"
+
 [[migrations]]
 tag = "v1"
 new_sqlite_classes = ["LeagueState"]
+
+[[migrations]]
+tag = "v2"
+new_sqlite_classes = ["StreamHub"]
 
 [[workflows]]
 name = "EVALUATE_TRADE"
