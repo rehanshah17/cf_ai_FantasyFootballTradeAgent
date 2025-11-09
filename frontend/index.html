@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Retro Bowl GM Console</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="./style.css" />
+  </head>
+  <body class="retrobowl">
+    <div class="crt-overlay"></div>
+    <header class="scoreboard">
+      <div class="scoreboard__logo">RETRO BOWL GM</div>
+      <div class="scoreboard__status">
+        <span class="scoreboard__lamp" id="scoreLamp"></span>
+        <span class="scoreboard__text" id="scoreText">IDLE</span>
+      </div>
+      <div class="scoreboard__meta">
+        <div class="meta-block">
+          <span class="meta-label">SERVER</span>
+          <span class="meta-value">CF EDGE</span>
+        </div>
+        <div class="meta-block">
+          <span class="meta-label">WORKFLOW</span>
+          <span class="meta-value">EvaluateTrade</span>
+        </div>
+      </div>
+    </header>
+
+    <main id="app" class="stadium-grid">
+      <section class="panel panel--init">
+        <div class="panel__title">
+          <span class="chip chip--yellow">DRIVE 1</span>
+          <h2>League Initialization</h2>
+        </div>
+        <p class="panel__copy">
+          Paste your full league JSON payload to seed the Durable Object locker room.
+        </p>
+        <textarea
+          id="leagueInput"
+          rows="10"
+          placeholder='{"leagueId":"demo","teams":[],"players":[],"rules":{},"history":[]}'
+        ></textarea>
+        <div class="actions">
+          <button id="initLeague" class="btn btn--yellow">Kickoff League</button>
+        </div>
+        <pre id="leagueStatus" class="status-ticker"></pre>
+      </section>
+
+      <section class="panel panel--trade">
+        <div class="panel__title">
+          <span class="chip chip--blue">DRIVE 2</span>
+          <h2>Trade Evaluation</h2>
+        </div>
+        <p class="panel__copy">
+          Call the play: describe the trade and optional persona voice for the writeup.
+        </p>
+        <label class="field">
+          <span>Trade Proposal JSON</span>
+          <textarea
+            id="tradeInput"
+            rows="8"
+            placeholder='{"leagueId":"demo","fromTeamId":"A","toTeamId":"B","give":["p1"],"get":["p2"]}'
+          ></textarea>
+        </label>
+        <label class="field field--tight">
+          <span>Persona</span>
+          <input id="personaInput" type="text" placeholder="Default" />
+        </label>
+        <div class="actions">
+          <button id="evaluateTrade" class="btn btn--blue">Run Play</button>
+        </div>
+        <pre id="tradeResult" class="status-ticker"></pre>
+      </section>
+
+      <section class="panel panel--memory">
+        <div class="panel-header">
+          <div>
+            <span class="chip chip--green">FILM ROOM</span>
+            <h2>GM Memory</h2>
+          </div>
+          <button id="refreshMemory" class="btn btn--green">Refresh</button>
+        </div>
+        <label class="field field--tight">
+          <span>League ID</span>
+          <input id="memoryLeagueId" type="text" placeholder="demo" />
+        </label>
+        <pre id="memoryOutput" class="status-ticker">Memory data will appear here.</pre>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <small>Retro Bowl GM Console · Powered by Cloudflare Workers &amp; Pages</small>
+    </footer>
+
+    <script src="./app.js" type="module"></script>
+  </body>
+</html>

@@ -2,37 +2,51 @@ import { computeTeamValueDelta } from "../services/value";
 import { riskFlags } from "../services/risk";
 import { similarTrades } from "../services/comps";
 import { personaWriteup } from "../llm/writeup";
-import { League, TradeEvaluation, TradeProposal,Env } from "../types";
+import { Env, League, TradeEvaluation, TradeProposal } from "../types";
 
-
-export async function evaluateTrade(env: Env, league: League, proposal: TradeProposal, persona = "Default"): Promise<TradeEvaluation> {
-const players = Object.fromEntries(league.players.map(p => [p.id, p]));
-const teams = Object.fromEntries(league.teams.map(t => [t.id, t]));
-
-
-const { deltaFrom, deltaTo } = computeTeamValueDelta(players, teams, proposal);
-const risks = [
-...riskFlags(players, proposal.give),
-...riskFlags(players, proposal.get)
+const GRADE_THRESHOLDS: Array<{ min: number; grade: TradeEvaluation["grade"] }> = [
+  { min: 5, grade: "A" },
+  { min: 2, grade: "B" },
+  { min: 0, grade: "C" },
+  { min: -2, grade: "D" },
 ];
 
+function gradeTrade(deltaFrom: number, deltaTo: number): TradeEvaluation["grade"] {
+  const smallestGain = Math.min(deltaFrom, deltaTo);
+  const bucket = GRADE_THRESHOLDS.find((threshold) => smallestGain >= threshold.min);
+  return bucket?.grade ?? "F";
+}
 
-const comps = await similarTrades(env, `give:${proposal.give.join(',')} get:${proposal.get.join(',')}`);
+export async function evaluateTrade(
+  env: Env,
+  league: League,
+  proposal: TradeProposal,
+  persona = "Default"
+): Promise<TradeEvaluation> {
+  const players = Object.fromEntries(league.players.map((player) => [player.id, player]));
+  const teams = Object.fromEntries(league.teams.map((team) => [team.id, team]));
 
+  const { deltaFrom, deltaTo } = computeTeamValueDelta(players, teams, proposal);
+  const risks = [...riskFlags(players, proposal.give), ...riskFlags(players, proposal.get)];
+  let comps: string[] = [];
+  try {
+    comps = await similarTrades(env, `give:${proposal.give.join(",")} get:${proposal.get.join(",")}`);
+  } catch (err) {
+    // If embeddings/vector search fails, proceed without comps instead of failing the evaluation.
+    console.warn("similarTrades failed:", err);
+    comps = [];
+  }
+  const grade = gradeTrade(deltaFrom, deltaTo);
 
-const grade = ((): TradeEvaluation["grade"] => {
-const m = Math.min(deltaFrom, deltaTo);
-if (m > 5) return "A";
-if (m > 2) return "B";
-if (m > 0) return "C";
-if (m > -2) return "D";
-return "F";
-})();
+  const baseEvaluation: Omit<TradeEvaluation, "personaWriteup"> = {
+    grade,
+    deltaValueFrom: deltaFrom,
+    deltaValueTo: deltaTo,
+    risks,
+    comps,
+  };
 
+  const personaWrite = await personaWriteup(env, persona, proposal, baseEvaluation);
 
-const base = { grade, deltaValueFrom: deltaFrom, deltaValueTo: deltaTo, risks, comps } as Omit<TradeEvaluation, "personaWriteup">;
-const personaWrite = await personaWriteup(env, persona, proposal, base);
-
-
-return { ...base, personaWriteup: personaWrite };
+  return { ...baseEvaluation, personaWriteup: personaWrite };
 }
