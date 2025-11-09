@@ -35,12 +35,9 @@
     <main id="app" class="stadium-grid">
       <section class="panel panel--init">
         <div class="panel__title">
-          <span class="chip chip--yellow">DRIVE 1</span>
           <h2>League Initialization</h2>
         </div>
-        <p class="panel__copy">
-          Paste your full league JSON payload to seed the Durable Object locker room.
-        </p>
+        <p class="panel__copy">Seed the locker room with your league JSON.</p>
         <textarea
           id="leagueInput"
           rows="10"
@@ -54,14 +51,11 @@
 
       <section class="panel panel--trade">
         <div class="panel__title">
-          <span class="chip chip--blue">DRIVE 2</span>
           <h2>Trade Evaluation</h2>
         </div>
-        <p class="panel__copy">
-          Call the play: describe the trade and optional persona voice for the writeup.
-        </p>
+        <p class="panel__copy">Drop the trade JSON and optional persona.</p>
         <label class="field">
-          <span>Trade Proposal JSON</span>
+          <span>Trade JSON</span>
           <textarea
             id="tradeInput"
             rows="8"

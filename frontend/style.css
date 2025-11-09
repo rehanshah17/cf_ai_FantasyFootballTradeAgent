@@ -216,8 +216,9 @@ input {
   background: rgba(8, 18, 32, 0.8);
   color: var(--text);
   padding: 0.9rem;
-  font-family: "VT323", monospace;
-  font-size: 1rem;
+  font-family: "Inter", "VT323", monospace;
+  font-size: 0.95rem;
+  line-height: 1.4;
   text-transform: none;
 }
 

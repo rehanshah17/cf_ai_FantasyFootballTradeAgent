@@ -162,23 +162,10 @@ router.post("/api/trade/evaluate", async (request, env: Env) => {
     const wfPayload = { leagueId: proposal.leagueId, proposal, persona };
     console.log("[API] Starting workflow with payload:", JSON.stringify(wfPayload));
 
-    let wfResult: { ok: boolean; evaluation?: unknown };
     try {
-      const instance = await env.EVALUATE_TRADE.create({ params: wfPayload, });
-      const status = await instance.status();
-
-      console.log("[API] Workflow created", {
-        id: instance.id,
-        status: status.status,
-        output: status.output,
-      });
-
-      return jsonResponse({
-        id: instance.id,
-        status: status.status,
-        output: status.output ?? null,
-      });
-
+      const instance = await env.EVALUATE_TRADE.create({ params: wfPayload });
+      console.log("[API] Workflow created", { id: instance.id });
+      return jsonResponse({ id: instance.id, status: "queued" }, { status: 202 });
     } catch (err) {
       console.error("[API] Workflow execution failed", err);
       throw err;
@@ -232,6 +219,23 @@ router.get("/api/memory/get", async (request, env: Env) => {
     return withCors(new Response(text, { headers: JSON_HEADERS }));
   } catch (error) {
     const message = error instanceof Error ? error.message : "Failed to fetch memory";
+    return jsonResponse({ error: message }, { status: 500 });
+  }
+});
+
+router.get("/api/trade/status", async (request, env: Env) => {
+  try {
+    const url = new URL(request.url);
+    const id = url.searchParams.get("id")?.trim();
+    if (!id) {
+      return jsonResponse({ error: "Missing id" }, { status: 400 });
+    }
+
+    const instance = await env.EVALUATE_TRADE.get(id);
+    const status = await instance.status();
+    return jsonResponse(status);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Failed to fetch workflow status";
     return jsonResponse({ error: message }, { status: 500 });
   }
 });

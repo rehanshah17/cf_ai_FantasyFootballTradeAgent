@@ -80,17 +80,48 @@ async function handleTradeEvaluation() {
     const proposal = unsafeParseJson(tradeInput.value, "Trade payload");
     const body = { proposal, persona: personaInput.value || "Default" };
     setStatus(resultBox, "Evaluating trade...");
-    const result = await apiRequest("/api/trade/evaluate", {
+    const enqueue = await apiRequest("/api/trade/evaluate", {
       method: "POST",
       body: JSON.stringify(body),
     });
-    setStatus(resultBox, JSON.stringify(result, null, 2));
+    if (!enqueue?.id) {
+      throw new Error("Workflow did not return an id");
+    }
+    setStatus(resultBox, `Workflow queued: ${enqueue.id}\nstatus: ${enqueue.status}`);
+    const evaluation = await waitForWorkflowResult(enqueue.id, resultBox);
+    setStatus(resultBox, JSON.stringify(evaluation, null, 2));
     scoreboard.set("DRIVE COMPLETE", "success");
     await refreshMemory();
   } catch (err) {
     setStatus(resultBox, err.message, true);
     scoreboard.set("TURNOVER", "error");
   }
+}
+
+async function waitForWorkflowResult(id, resultBox) {
+  const maxAttempts = 120;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    scoreboard.set(`POLL ${attempt + 1}`, "waiting");
+    const status = await apiRequest(`/api/trade/status?id=${encodeURIComponent(id)}`);
+    setStatus(
+      resultBox,
+      `Workflow ${id}\nstate: ${status.status}\n${status.error ? `error: ${status.error}` : ""}`
+    );
+
+    if (status.status === "errored" || status.status === "terminated") {
+      throw new Error(status.error || "Workflow ended without output");
+    }
+
+    if (status.status === "complete" && status.output) {
+      const output = status.output;
+      if (output.evaluation) {
+        return output.evaluation;
+      }
+      return output;
+    }
+  }
+  throw new Error("Workflow timed out before completion");
 }
 
 async function refreshMemory() {
