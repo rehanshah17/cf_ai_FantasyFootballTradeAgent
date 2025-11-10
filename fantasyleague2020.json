@@ -1,0 +1,424 @@
+{
+  "leagueId": "fantasyleague2020",
+  "rules": {
+    "scoring": "PPR"
+  },
+  "teams": [
+    {
+      "id": "t01",
+      "name": "Rehan",
+      "scoring": "PPR",
+      "roster": {
+        "starters": [
+          "p38dc72",
+          "p55c57f",
+          "p9cd9c3",
+          "p2e3ecb",
+          "pb8f267",
+          "pf5ad68",
+          "p05150f",
+          "p0ab53b",
+          "pa24487"
+        ],
+        "bench": [
+          "p339b8a",
+          "ped91f7",
+          "p453c2e",
+          "p6e70cd",
+          "pb63ce7",
+          "p845550",
+          "pb4a8d4"
+        ]
+      }
+    },
+    {
+      "id": "t02",
+      "name": "Ajay",
+      "scoring": "PPR",
+      "roster": {
+        "starters": [
+          "pd65c47",
+          "pecbe72",
+          "p82d89e",
+          "pf57447",
+          "pd06c49",
+          "p1c65e5",
+          "pb36d6a",
+          "pe0ee97",
+          "pb715c5"
+        ],
+        "bench": [
+          "p13467f",
+          "pa5afe5",
+          "p4398aa",
+          "p711d8f",
+          "p50f42e",
+          "p189623",
+          "p82672d"
+        ]
+      }
+    },
+    {
+      "id": "t03",
+      "name": "Leon",
+      "scoring": "PPR",
+      "roster": {
+        "starters": [],
+        "bench": []
+      }
+    },
+    {
+      "id": "t04",
+      "name": "Aditya",
+      "scoring": "PPR",
+      "roster": {
+        "starters": [],
+        "bench": []
+      }
+    },
+    {
+      "id": "t05",
+      "name": "Ayush",
+      "scoring": "PPR",
+      "roster": {
+        "starters": [],
+        "bench": []
+      }
+    },
+    {
+      "id": "t06",
+      "name": "Victor",
+      "scoring": "PPR",
+      "roster": {
+        "starters": [],
+        "bench": []
+      }
+    },
+    {
+      "id": "t07",
+      "name": "Ryan",
+      "scoring": "PPR",
+      "roster": {
+        "starters": [],
+        "bench": []
+      }
+    },
+    {
+      "id": "t08",
+      "name": "Anirudh",
+      "scoring": "PPR",
+      "roster": {
+        "starters": [],
+        "bench": []
+      }
+    },
+    {
+      "id": "t09",
+      "name": "Aryan",
+      "scoring": "PPR",
+      "roster": {
+        "starters": [],
+        "bench": []
+      }
+    },
+    {
+      "id": "t10",
+      "name": "Ishaan",
+      "scoring": "PPR",
+      "roster": {
+        "starters": [],
+        "bench": []
+      }
+    }
+  ],
+  "players": {
+    "p38dc72": {
+      "id": "p38dc72",
+      "name": "Lamar Jackson",
+      "nfl": "BAL",
+      "pos": [
+        "QB"
+      ],
+      "proj": 23.6
+    },
+    "p55c57f": {
+      "id": "p55c57f",
+      "name": "Saquon Barkley",
+      "nfl": "PHI",
+      "pos": [
+        "RB"
+      ],
+      "proj": 16.1
+    },
+    "p9cd9c3": {
+      "id": "p9cd9c3",
+      "name": "Derrick Henry",
+      "nfl": "BAL",
+      "pos": [
+        "RB"
+      ],
+      "proj": 15.8
+    },
+    "p2e3ecb": {
+      "id": "p2e3ecb",
+      "name": "Zay Flowers",
+      "nfl": "BAL",
+      "pos": [
+        "WR"
+      ],
+      "proj": 15.6
+    },
+    "pb8f267": {
+      "id": "pb8f267",
+      "name": "Stefon Diggs",
+      "nfl": "NE",
+      "pos": [
+        "WR"
+      ],
+      "proj": 14.0
+    },
+    "pf5ad68": {
+      "id": "pf5ad68",
+      "name": "Dalton Kincaid",
+      "nfl": "BUF",
+      "pos": [
+        "TE"
+      ],
+      "proj": 9.8
+    },
+    "p05150f": {
+      "id": "p05150f",
+      "name": "Kenneth Walker III",
+      "nfl": "SEA",
+      "pos": [
+        "RB"
+      ],
+      "proj": 12.5
+    },
+    "p0ab53b": {
+      "id": "p0ab53b",
+      "name": "Eagles D/ST",
+      "nfl": "PHI",
+      "pos": [
+        "D/ST"
+      ],
+      "proj": 3.7
+    },
+    "pa24487": {
+      "id": "pa24487",
+      "name": "Jake Bates",
+      "nfl": "DET",
+      "pos": [
+        "K"
+      ],
+      "proj": 8.8
+    },
+    "p339b8a": {
+      "id": "p339b8a",
+      "name": "Mark Andrews",
+      "nfl": "BAL",
+      "pos": [
+        "TE"
+      ],
+      "proj": 9.6
+    },
+    "ped91f7": {
+      "id": "ped91f7",
+      "name": "Khalil Shakir",
+      "nfl": "BUF",
+      "pos": [
+        "WR"
+      ],
+      "proj": 12.7
+    },
+    "p453c2e": {
+      "id": "p453c2e",
+      "name": "C.J. Stroud",
+      "nfl": "HOU",
+      "pos": [
+        "QB"
+      ],
+      "proj": 0.0
+    },
+    "p6e70cd": {
+      "id": "p6e70cd",
+      "name": "Jalen Coker",
+      "nfl": "CAR",
+      "pos": [
+        "WR"
+      ],
+      "proj": 5.4
+    },
+    "pb63ce7": {
+      "id": "pb63ce7",
+      "name": "Adonai Mitchell",
+      "nfl": "NYJ",
+      "pos": [
+        "WR"
+      ],
+      "proj": 0.0
+    },
+    "p845550": {
+      "id": "p845550",
+      "name": "Devin Singletary",
+      "nfl": "NYG",
+      "pos": [
+        "RB"
+      ],
+      "proj": 9.7
+    },
+    "pb4a8d4": {
+      "id": "pb4a8d4",
+      "name": "Ray Davis",
+      "nfl": "BUF",
+      "pos": [
+        "RB"
+      ],
+      "proj": 2.1
+    },
+    "pd65c47": {
+      "id": "pd65c47",
+      "name": "Sam Darnold",
+      "nfl": "SEA",
+      "pos": [
+        "QB"
+      ],
+      "proj": 16.6
+    },
+    "pecbe72": {
+      "id": "pecbe72",
+      "name": "James Cook III",
+      "nfl": "BUF",
+      "pos": [
+        "RB"
+      ],
+      "proj": 21.0
+    },
+    "p82d89e": {
+      "id": "p82d89e",
+      "name": "Tyrone Tracy Jr.",
+      "nfl": "NYG",
+      "pos": [
+        "RB"
+      ],
+      "proj": 12.5
+    },
+    "pf57447": {
+      "id": "pf57447",
+      "name": "Amon-Ra St. Brown",
+      "nfl": "DET",
+      "pos": [
+        "WR"
+      ],
+      "proj": 22.3
+    },
+    "pd06c49": {
+      "id": "pd06c49",
+      "name": "A.J. Brown",
+      "nfl": "PHI",
+      "pos": [
+        "WR"
+      ],
+      "proj": 17.2
+    },
+    "p1c65e5": {
+      "id": "p1c65e5",
+      "name": "Kyle Pitts Sr.",
+      "nfl": "ATL",
+      "pos": [
+        "TE"
+      ],
+      "proj": 11.8
+    },
+    "pb36d6a": {
+      "id": "pb36d6a",
+      "name": "Rashid Shaheed",
+      "nfl": "SEA",
+      "pos": [
+        "WR"
+      ],
+      "proj": 10.4
+    },
+    "pe0ee97": {
+      "id": "pe0ee97",
+      "name": "Buccaneers D/ST",
+      "nfl": "TB",
+      "pos": [
+        "D/ST"
+      ],
+      "proj": 5.3
+    },
+    "pb715c5": {
+      "id": "pb715c5",
+      "name": "Chris Boswell",
+      "nfl": "PIT",
+      "pos": [
+        "K"
+      ],
+      "proj": 8.3
+    },
+    "p13467f": {
+      "id": "p13467f",
+      "name": "Baker Mayfield",
+      "nfl": "TB",
+      "pos": [
+        "QB"
+      ],
+      "proj": 16.1
+    },
+    "pa5afe5": {
+      "id": "pa5afe5",
+      "name": "Isiah Pacheco",
+      "nfl": "KC",
+      "pos": [
+        "RB"
+      ],
+      "proj": null
+    },
+    "p4398aa": {
+      "id": "p4398aa",
+      "name": "Javonte Williams",
+      "nfl": "DAL",
+      "pos": [
+        "RB"
+      ],
+      "proj": null
+    },
+    "p711d8f": {
+      "id": "p711d8f",
+      "name": "Jerome Ford",
+      "nfl": "CLE",
+      "pos": [
+        "RB"
+      ],
+      "proj": 3.8
+    },
+    "p50f42e": {
+      "id": "p50f42e",
+      "name": "Jake Ferguson",
+      "nfl": "DAL",
+      "pos": [
+        "TE"
+      ],
+      "proj": 10.1
+    },
+    "p189623": {
+      "id": "p189623",
+      "name": "Christian Kirk",
+      "nfl": "HOU",
+      "pos": [
+        "WR"
+      ],
+      "proj": 9.1
+    },
+    "p82672d": {
+      "id": "p82672d",
+      "name": "Falcons D/ST",
+      "nfl": "ATL",
+      "pos": [
+        "D/ST"
+      ],
+      "proj": 3.6
+    }
+  }
+}

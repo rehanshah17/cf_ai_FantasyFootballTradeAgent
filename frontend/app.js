@@ -63,7 +63,7 @@ async function handleLeagueInit() {
       method: "POST",
       body: JSON.stringify(payload),
     });
-    setStatus(status, JSON.stringify(result, null, 2));
+    renderLeagueInitStatus(result, status);
     scoreboard.set("LEAGUE READY", "success");
   } catch (err) {
     setStatus(status, err.message, true);
@@ -73,13 +73,13 @@ async function handleLeagueInit() {
 
 async function handleTradeEvaluation() {
   const tradeInput = document.getElementById("tradeInput");
-  const personaInput = document.getElementById("personaInput");
+  const personaSelect = document.getElementById("personaSelect");
   const resultBox = document.getElementById("tradeResult");
   try {
     scoreboard.set("PLAY CALL SENT", "waiting");
     const proposal = unsafeParseJson(tradeInput.value, "Trade payload");
-    const body = { proposal, persona: personaInput.value || "Default" };
-    setStatus(resultBox, "Evaluating trade...");
+    const body = { proposal, persona: personaSelect.value || "Analytics Bot" };
+    showEvaluatingState(resultBox);
     const enqueue = await apiRequest("/api/trade/evaluate", {
       method: "POST",
       body: JSON.stringify(body),
@@ -87,9 +87,8 @@ async function handleTradeEvaluation() {
     if (!enqueue?.id) {
       throw new Error("Workflow did not return an id");
     }
-    setStatus(resultBox, `Workflow queued: ${enqueue.id}\nstatus: ${enqueue.status}`);
-    const evaluation = await waitForWorkflowResult(enqueue.id, resultBox);
-    setStatus(resultBox, JSON.stringify(evaluation, null, 2));
+    const evaluation = await awaitWorkflowResult(enqueue.id, resultBox);
+    renderEvaluation(evaluation, resultBox);
     scoreboard.set("DRIVE COMPLETE", "success");
     await refreshMemory();
   } catch (err) {
@@ -98,7 +97,63 @@ async function handleTradeEvaluation() {
   }
 }
 
-async function waitForWorkflowResult(id, resultBox) {
+async function awaitWorkflowResult(id, resultBox) {
+  try {
+    return await streamWorkflowResult(id, resultBox);
+  } catch (err) {
+    console.warn("SSE stream unavailable, falling back to polling", err);
+    scoreboard.set("STREAM FALLBACK", "waiting");
+    return await pollWorkflowResult(id, resultBox);
+  }
+}
+
+function streamWorkflowResult(id, resultBox) {
+  return new Promise((resolve, reject) => {
+    const streamUrl = `${API_BASE}/api/stream?id=${encodeURIComponent(id)}`;
+    const source = new EventSource(streamUrl);
+
+    const cleanup = () => {
+      source.close();
+    };
+
+    source.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data || "{}");
+        setStatus(
+          resultBox,
+          `Workflow ${id}\nstate: ${data.status}\n${data.error ? `error: ${data.error}` : ""}`
+        );
+
+        if (data.status === "errored" || data.status === "terminated") {
+          cleanup();
+          reject(new Error(data.error || "Workflow errored"));
+          return;
+        }
+
+        if (data.status === "complete" && data.output) {
+          scoreboard.set("STREAM COMPLETE", "success");
+          cleanup();
+          const evaluation = data.output.evaluation || data.output;
+          resolve(evaluation);
+          return;
+        }
+
+        scoreboard.set(`STREAM ${data.status || "WAIT"}`, "waiting");
+      } catch (err) {
+        cleanup();
+        reject(err);
+      }
+    };
+
+    source.onerror = () => {
+      scoreboard.set("STREAM LOST", "error");
+      cleanup();
+      reject(new Error("Stream connection lost"));
+    };
+  });
+}
+
+async function pollWorkflowResult(id, resultBox) {
   const maxAttempts = 120;
   for (let attempt = 0; attempt < maxAttempts; attempt++) {
     await new Promise((resolve) => setTimeout(resolve, 1000));
@@ -137,7 +192,7 @@ async function refreshMemory() {
     scoreboard.set("FILM ROOM SYNC", "waiting");
     setStatus(memoryBox, "Loading memory...");
     const memory = await apiRequest(`/api/memory/get?leagueId=${encodeURIComponent(leagueId)}`);
-    setStatus(memoryBox, JSON.stringify(memory, null, 2));
+    renderMemory(memory, memoryBox);
     scoreboard.set("MEMORY UPDATED", "success");
   } catch (err) {
     setStatus(memoryBox, err.message, true);
@@ -164,6 +219,7 @@ function wireUi() {
   // Pre-fill memory league ID from trade payload if present
   const tradeInput = document.getElementById("tradeInput");
   const memoryLeagueId = document.getElementById("memoryLeagueId");
+  const personaSelect = document.getElementById("personaSelect");
   tradeInput?.addEventListener("input", () => {
     try {
       const proposal = JSON.parse(tradeInput.value || "{}");
@@ -174,6 +230,8 @@ function wireUi() {
       // ignore typing errors
     }
   });
+
+  personaSelect.value = "Analytics Bot";
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -184,3 +242,52 @@ document.addEventListener("DOMContentLoaded", () => {
   scoreboard.text = document.getElementById("scoreText");
   scoreboard.set("Idle", "idle");
 });
+
+function renderLeagueInitStatus(result, statusEl) {
+  if (!result || typeof result !== "object") {
+    setStatus(statusEl, "League initialized.");
+    return;
+  }
+  const message = result.ok
+    ? `League ${result.leagueId || ""} initialized successfully.`
+    : JSON.stringify(result);
+  setStatus(statusEl, message.trim());
+}
+
+function showEvaluatingState(resultBox) {
+  setStatus(resultBox, "Evaluating trade...");
+  scoreboard.set("STREAM WAIT", "waiting");
+}
+
+function renderEvaluation(evaluation, resultBox) {
+  const grade = evaluation?.grade ?? "N/A";
+  const deltaFrom = typeof evaluation?.deltaValueFrom === "number" ? evaluation.deltaValueFrom.toFixed(1) : "0";
+  const deltaTo = typeof evaluation?.deltaValueTo === "number" ? evaluation.deltaValueTo.toFixed(1) : "0";
+  const personaWriteup = evaluation?.personaWriteup ?? "No persona writeup available.";
+
+  resultBox.innerHTML = `
+    <div class="evaluation-card">
+      <div class="evaluation-grade">${grade}</div>
+      <div class="evaluation-deltas">
+        <span>From Team Δ: ${deltaFrom}</span>
+        <span>To Team Δ: ${deltaTo}</span>
+      </div>
+      <p class="evaluation-writeup">${personaWriteup}</p>
+    </div>
+  `;
+}
+
+function renderMemory(memory, memoryBox) {
+  if (!memory) {
+    memoryBox.textContent = "No memory data available.";
+    return;
+  }
+
+  const lines = [
+    memory.lastUpdated ? `Last Updated: ${new Date(memory.lastUpdated).toLocaleString()}` : null,
+    memory.tradeCount != null ? `Total Trades Tracked: ${memory.tradeCount}` : null,
+    memory.personaNotes ? `Notes: ${memory.personaNotes}` : null,
+  ].filter(Boolean);
+
+  memoryBox.textContent = lines.length ? lines.join("\n\n") : "No memory summary yet.";
+}
